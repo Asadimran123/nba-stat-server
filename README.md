@@ -1,8 +1,5 @@
 # nba-stat-server
 
-Short description or tagline about the project.
-
-
 ## About the Project
 
 Contains the code and dependecies for nba-stat-tracker server code
