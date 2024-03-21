@@ -1,3 +1,16 @@
+/**
+ * boilerplate code for proxy api 
+ * requires : 
+ *          expressJS
+ *          cors
+ *          axios
+ *          express-rate-limiter
+ *          dot-env
+ * 
+ */
+
+
+
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
@@ -9,7 +22,10 @@ const PORT = process.env.PORT || 5001
 
 const app = express()
 
-//rate limit
+/**
+ * rate limiter
+ * 50 requests/10 mins
+ */
 const limiter = rateLimiter({
     windowMs: 10 * 60 * 1000,
     max: 50
@@ -21,9 +37,15 @@ app.set('trust proxy', 1)
 app.use(cors())
 
 
-/** routing */
+/** routing 
+ * create route for frontend
+ * replace '/teams' with your route
+*/
 app.get('/teams', async (req, res) =>{
     console.log('received request.')
+    /** GET request to api 
+     * replace url, params, and headers with what you need
+     */
     const options = {
         method: 'GET',
         url: 'https://api-nba-v1.p.rapidapi.com/standings',
@@ -32,7 +54,7 @@ app.get('/teams', async (req, res) =>{
           season: req.query.season
         },
         headers: {
-          'X-RapidAPI-Key': process.env.TEAMS_API_KEY,
+          'X-RapidAPI-Key': process.env.TEAMS_API_KEY,  //use .env to hide your epi key
           'X-RapidAPI-Host': 'api-nba-v1.p.rapidapi.com'
         }
       };
