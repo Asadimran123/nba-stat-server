@@ -1,11 +1,22 @@
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
+const rateLimiter = require('express-rate-limit')
+
 require('dotenv').config()
 
 const PORT = process.env.PORT || 5001
 
 const app = express()
+
+//rate limit
+const limiter = rateLimiter({
+    windowMs: 10 * 60 * 1000,
+    max: 50
+})
+
+app.use(limiter)
+app.set('trust proxy', 1)
 
 app.use(cors())
 
