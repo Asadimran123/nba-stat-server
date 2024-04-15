@@ -2,11 +2,11 @@
   "name": "nba-stat-server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "node index",
+    "dev": "nodemon index"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +17,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
     "express-rate-limit": "^7.2.0",
-    "needle": "^3.3.1"
+    "needle": "^3.3.1",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
