@@ -40,11 +40,11 @@ app.get('/teams', async (req, res) => {
 
 app.get('/playerSearch', async (req, res) => {
   // console.log(`getting players matching ${req.query}`)
-  console.log("in player search ")
+  // console.log("in player search ")
   const options = {
     method: 'GET',
     url: 'https://api-nba-v1.p.rapidapi.com/players',
-    params: {search: 'davis'},
+    params: {search: req.query.search},
     headers: {
       'X-RapidAPI-Key': process.env.TEAMS_API_KEY,
       'X-RapidAPI-Host': 'api-nba-v1.p.rapidapi.com'
@@ -54,7 +54,8 @@ app.get('/playerSearch', async (req, res) => {
     try {
       const response = await axios.request(options);
       res.status(200).json(response.data.response);
-      console.log('player query success')
+      // console.log(response.data.response)
+      // console.log('player query success')
   } catch (error) {
       console.error(error);
   }
@@ -67,8 +68,8 @@ app.get('/playerStats', async (req, res) => {
     method: 'GET',
     url: 'https://api-nba-v1.p.rapidapi.com/players/statistics',
     params: {
-      id: '236',
-      season: '2020'
+      id: req.query.id,
+      season: req.query.season
     },
     headers: {
       'X-RapidAPI-Key': process.env.TEAMS_API_KEY,
@@ -78,6 +79,12 @@ app.get('/playerStats', async (req, res) => {
 
   try {
       const response = await axios.request(options);
+      if(!response.data.response){
+        console.log("no data found");
+        res.status(404).json({msg: "no data found"});
+        return;
+      }
+      delete response.data.response.min
       /* this object returns TOTALS */
       const myRes = [
         {
@@ -89,7 +96,7 @@ app.get('/playerStats', async (req, res) => {
         {
         totalPoints : 0, 
         totalAssists : 0,
-        totalMinsPlayed : 0, 
+        // totalMinsPlayed : 0, 
         totalfgm : 0, 
         totalfga : 0, 
         totalfgp : 0,
@@ -111,7 +118,7 @@ app.get('/playerStats', async (req, res) => {
       {
         avgPoints : 0, 
         avgAssists : 0,
-        avgMinsPlayed : 0, 
+        // avgMinsPlayed : 0, 
         avgfgm : 0, 
         avgfga : 0, 
         avgfgp : 0,
@@ -134,9 +141,9 @@ app.get('/playerStats', async (req, res) => {
        for (const item of response.data.response) {
           myRes[1].totalPoints += item.points;
           myRes[1].totalAssists += item.assists;
-          const arr = item.min.split(':')
-          const minsPlayed = (Number(arr[0]) * 60) + (Number(arr[1]))
-          myRes[1].totalMinsPlayed += Number(minsPlayed/60);
+          // const arr = item.min.split(':')
+          // const minsPlayed = (Number(arr[0]) * 60) + (Number(arr[1]))
+          // myRes[1].totalMinsPlayed += Number(minsPlayed/60);
           myRes[1].totalfgm  += item.fgm;
           myRes[1].totalfga  += item.fga;
           myRes[1].totalfgp  += Number(item.fgp);
@@ -173,21 +180,23 @@ app.get('/playerStats', async (req, res) => {
       myRes[2]["avgftp"] = myRes[1]["totalftm"] / myRes[1]["totalfta"];
       myRes[2]["avgtpp"] = myRes[1]["totaltpm"] / myRes[1]["totaltpa"];
       res.status(200).json(myRes);
+      // console.log(myRes)
       console.log("success")
   } catch (error) {
-      console.error(error);
+      console.error("could not fetch data ", error);
+      res.status(202).json({msg: `no data available for player ${req.query.id}`})
   }
 });
 
 
 
-const lambda = serverless(app)
+// const lambda = serverless(app)
 
-export async function handler(event, context) {
-  return lambda(event, context)
-}
+// export async function handler(event, context) {
+//   return lambda(event, context)
+// }
 
-// app.listen(5001, ()=>{
-//   console.log('server running on 5001')
-// })
+app.listen(5001, ()=>{
+  console.log('server running on 5001')
+})
 
