@@ -39,8 +39,6 @@ app.get('/teams', async (req, res) => {
 });
 
 app.get('/playerSearch', async (req, res) => {
-  // console.log(`getting players matching ${req.query}`)
-  // console.log("in player search ")
   const options = {
     method: 'GET',
     url: 'https://api-nba-v1.p.rapidapi.com/players',
@@ -91,7 +89,8 @@ app.get('/playerStats', async (req, res) => {
           "firstname" : response.data.response[0].player.firstname,
           "lastname" : response.data.response[0].player.lastname,
           "id" : response.data.response[0].player.id,
-          "pos" : response.data.response[0].pos
+          "pos" : response.data.response[0].pos,
+          "season" : req.query.season
         },
         {
         totalPoints : 0, 
@@ -146,13 +145,13 @@ app.get('/playerStats', async (req, res) => {
           // myRes[1].totalMinsPlayed += Number(minsPlayed/60);
           myRes[1].totalfgm  += item.fgm;
           myRes[1].totalfga  += item.fga;
-          myRes[1].totalfgp  += Number(item.fgp);
+          myRes[1].totalfgp  = Number(item.fgp);
           myRes[1].totalftm  += item.ftm;
           myRes[1].totalfta += item.fta;
-          myRes[1].totalftp += Number(item.ftp);
+          myRes[1].totalftp = Number(item.ftp);
           myRes[1].totaltpm += item.tpm;
           myRes[1].totaltpa += item.tpa;
-          myRes[1].totaltpp  += Number(item.tpp);
+          myRes[1].totaltpp  = Number(item.tpp);
           myRes[1].totaloffReb += item.offReb;
           myRes[1].totaldefReb += item.defReb;
           myRes[1].totalReb += item.totReb;
@@ -176,27 +175,27 @@ app.get('/playerStats', async (req, res) => {
 
       } else {
           console.log("No items in the data set.");
+          res.status(404);
       }
       myRes[2]["avgftp"] = myRes[1]["totalftm"] / myRes[1]["totalfta"];
       myRes[2]["avgtpp"] = myRes[1]["totaltpm"] / myRes[1]["totaltpa"];
       res.status(200).json(myRes);
       // console.log(myRes)
-      console.log("success")
+      console.log("success");
   } catch (error) {
       console.error("could not fetch data ", error);
-      res.status(202).json({msg: `no data available for player ${req.query.id}`})
+      res.status(202).json([{msg: `no data available`}])
   }
 });
 
 
 
-// const lambda = serverless(app)
+const lambda = serverless(app)
 
-// export async function handler(event, context) {
-//   return lambda(event, context)
-// }
+export async function handler(event, context) {
+  return lambda(event, context)
+}
 
-app.listen(5001, ()=>{
-  console.log('server running on 5001')
-})
-
+// app.listen(5001, ()=>{
+//   console.log('server running on 5001')
+// })
