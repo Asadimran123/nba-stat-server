@@ -189,13 +189,29 @@ app.get('/playerStats', async (req, res) => {
 });
 
 
+app.get('/news', async (req, res) => {
+    const options = {
+      method: 'GET',
+      url: 'https://nba-latest-news.p.rapidapi.com/articles',
+      headers: {
+        'X-RapidAPI-Key': process.env.TEAMS_API_KEY,
+        'X-RapidAPI-Host': 'nba-latest-news.p.rapidapi.com'
+      }
+    };
+    
+    try {
+      const response = await axios.request(options);
+      res.status(200).json(response.data.splice(0, 5));
+    } catch (error) {
+      console.error(error);
+      res.status(404);
+    }
+});
+
+
 
 const lambda = serverless(app)
 
 export async function handler(event, context) {
   return lambda(event, context)
 }
-
-// app.listen(5001, ()=>{
-//   console.log('server running on 5001')
-// })
